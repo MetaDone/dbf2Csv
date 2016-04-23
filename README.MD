@@ -1,4 +1,4 @@
-# Dbsf2Csv
+# Dbf2Csv
 _Convert DBF files to CSV_
 ## Server Requirements
 #### How to install dbase on Ubuntu (14.04):
