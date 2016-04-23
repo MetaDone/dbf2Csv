@@ -2,6 +2,8 @@
     "name": "metadone/dbf2csv",
     "description": "Convert DBF to CSV.",
     "keywords": ["dbf2csv","dbf","convert"],
+    "homepage": "http://metadone.ru",
+    "license": "MIT",
     "authors": [
         {
             "name": "admin",
