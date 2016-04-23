@@ -1,4 +1,4 @@
-# Dbf2Csv
+# Dbsf2Csv
 _Convert DBF files to CSV_
 ## Server Requirements
 #### How to install dbase on Ubuntu (14.04):
@@ -32,7 +32,23 @@ _Convert DBF files to CSV_
 /full/path/to/folder/bin/dbf2csv convert "/path/to/database.dbf" "/path/to/output.csv" <charset database (optional)> <charset output file (optional)>
 ```
 
+
+###Install phar
+
+```sh
+curl -O https://github.com/MetaDone/dbf2Csv/blob/master/dbf2csv.phar
+chmod +x dbf2csv.phar
+sudo mv dbf2csv.phar /usr/local/bin/dbf2csv
+```
+
 ###Example
 ```sh
 /var/www/dbf2csv/bin/dbf2csv convert "/home/user/example.DBF" "/home/user/output.csv" CP866 UTF-8
+```
+
+Phar example
+
+###Example
+```sh
+dbf2csv convert "/home/user/example.DBF" "/home/user/output.csv" CP866 UTF-8
 ```
