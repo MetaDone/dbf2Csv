@@ -1,0 +1,18 @@
+{
+    "name": "metadone/dbf2csv",
+    "description": "Convert DBF to CSV.",
+    "authors": [
+        {
+            "name": "loki",
+            "email": "loki.90@yandex.ru"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Convert\\": "src/Convert/"
+        }
+    },
+    "require": {
+        "symfony/console": "v3.0.4"
+    }
+}
