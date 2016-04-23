@@ -48,7 +48,6 @@ sudo mv dbf2csv.phar /usr/local/bin/dbf2csv
 
 Phar example
 
-###Example
 ```sh
 dbf2csv convert "/home/user/example.DBF" "/home/user/output.csv" CP866 UTF-8
 ```
