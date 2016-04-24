@@ -23,18 +23,10 @@ class ToCSV extends Command
         $this
                 ->setName('convert')
                 ->setDescription('Convert DBF to CSV')
-                ->addArgument(
-                        'input', InputArgument::REQUIRED, 'File to convert'
-                )
-                ->addArgument(
-                        'output', InputArgument::REQUIRED, 'Output path'
-                )
-                ->addArgument(
-                        'charsetInput', InputArgument::OPTIONAL, 'Charset of dbf database'
-                )
-                ->addArgument(
-                        'charsetOutput', InputArgument::OPTIONAL, 'Charset of final file'
-                )
+                ->addArgument('input', InputArgument::REQUIRED, 'File to convert')
+                ->addArgument('output', InputArgument::REQUIRED, 'Output path')
+                ->addArgument('charsetInput', InputArgument::OPTIONAL, 'Charset of dbf database')
+                ->addArgument('charsetOutput', InputArgument::OPTIONAL, 'Charset of final file')
         ;
     }
 
@@ -83,7 +75,7 @@ class ToCSV extends Command
     /**
      * Write first string file - add columns names
      * @param array $columnInfo data from columns in input db
-     * @param resource $fp opened file    
+     * @param resource $fp opened file
      */
     private function writeHead($columnInfo, $fp)
     {
@@ -97,23 +89,19 @@ class ToCSV extends Command
     /**
      * Get string for append in final file
      * @param int $dbf input database resource id from dbase_open
-     * @param int $i element index     
+     * @param int $i element index
      * @return array array to append in csv
      */
     private function getRowToString($dbf, $i)
     {
         $row = dbase_get_record($dbf, $i);
-        if($row['deleted']==1){
+        if ($row['deleted'] == 1) {
             return [];
         }
         unset($row['deleted']);
-        //print_r($row);
-        //sleep(5);
 
         if ($this->charsetInput) {
-            $row = array_map(array(
-                $this,
-                "conv"), $row);
+            $row = array_map(array($this,"conv"), $row);
         }
         return $row;
     }
