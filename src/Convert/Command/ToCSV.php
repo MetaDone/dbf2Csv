@@ -61,16 +61,18 @@ class ToCSV extends Command
         }
         $numRec = dbase_numrecords($dbf);
         $progress = new ProgressBar($output, $numRec);
-        $columnInfo = dbase_get_header_info($dbf);         
-               
+        $columnInfo = dbase_get_header_info($dbf);
+
         $fp = fopen($outputFile, 'w');
         $this->writeHead($columnInfo, $fp);
-        
+
         $output->writeln('Convert start');
         for ($i = 0; $i <= $numRec; $i++) {
             $data = $this->getRowToString($dbf, $i);
-            fputcsv($fp, $data);
-            $progress->advance();
+            if (!empty($data)) {
+                fputcsv($fp, $data);
+                $progress->advance();
+            }
         }
         $progress->finish();
         $output->writeln('Convert is finished, memory: ' . (memory_get_peak_usage(1) / 1024) . "kb");
@@ -86,7 +88,7 @@ class ToCSV extends Command
     private function writeHead($columnInfo, $fp)
     {
         $names = [];
-        foreach ($columnInfo as $column){
+        foreach ($columnInfo as $column) {
             $names[] = $column['name'];
         }
         fputcsv($fp, $names);
@@ -99,18 +101,22 @@ class ToCSV extends Command
      * @return array array to append in csv
      */
     private function getRowToString($dbf, $i)
-    {       
+    {
         $row = dbase_get_record($dbf, $i);
+        if($row['deleted']==1){
+            return [];
+        }
         unset($row['deleted']);
         //print_r($row);
         //sleep(5);
 
         if ($this->charsetInput) {
-            $row = array_map(array($this,"conv"), $row);
+            $row = array_map(array(
+                $this,
+                "conv"), $row);
         }
         return $row;
     }
-    
 
     /**
      * @param string $outputFile path to final file
