@@ -7,7 +7,7 @@ use Convert\Command\ToCSV;
 use Symfony\Component\Console\Application;
 
 $command = new ToCSV();
-$application = new Application('dbf2csv', '0.0.1');
+$application = new Application('dbf2csv', '0.0.2');
 $application->add($command);
 $application->setDefaultCommand($command->getName());
 $application->run();

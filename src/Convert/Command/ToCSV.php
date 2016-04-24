@@ -15,6 +15,9 @@ use Symfony\Component\Console\Helper\ProgressBar;
 class ToCSV extends Command
 {
 
+    private $charsetInput;
+    private $charsetOutput;
+
     protected function configure()
     {
         $this
@@ -40,8 +43,9 @@ class ToCSV extends Command
         set_time_limit(0);
         $inputFile = $input->getArgument('input');
         $outputFile = $input->getArgument('output');
-        $charsetInput = $input->getArgument('charsetInput');
+        $this->charsetInput = $input->getArgument('charsetInput');
         $charsetOutput = $input->getArgument('charsetOutput');
+        $this->charsetOutput = $charsetOutput == "" ? "UTF-8" : $charsetOutput;
         if (!extension_loaded("dbase")) {
             $output->writeln('<error>dbase extension is not installed!</error>');
             return;
@@ -55,93 +59,58 @@ class ToCSV extends Command
             $output->writeln('<error>Output file is not writable! Check permissions</error>');
             return;
         }
-        $numRec =dbase_numrecords($dbf);
+        $numRec = dbase_numrecords($dbf);
         $progress = new ProgressBar($output, $numRec);
-        $columnInfo = dbase_get_header_info($dbf);
-        $countElements = count($columnInfo);
-        $this->writeHead($columnInfo, $countElements, $outputFile);
-
+        $columnInfo = dbase_get_header_info($dbf);         
+               
+        $fp = fopen($outputFile, 'w');
+        $this->writeHead($columnInfo, $fp);
+        
         $output->writeln('Convert start');
         for ($i = 0; $i <= $numRec; $i++) {
-            $string = $this->getRowToString($dbf, $i, $countElements, $charsetInput, $charsetOutput);
-            file_put_contents($outputFile, $string . "\n", FILE_APPEND);
+            $data = $this->getRowToString($dbf, $i);
+            fputcsv($fp, $data);
             $progress->advance();
         }
         $progress->finish();
         $output->writeln('Convert is finished, memory: ' . (memory_get_peak_usage(1) / 1024) . "kb");
+        fclose($fp);
         dbase_close($dbf);
     }
 
     /**
      * Write first string file - add columns names
      * @param array $columnInfo data from columns in input db
-     * @param int $countElements count columns
-     * @param string $outputFile path to final file
+     * @param resource $fp opened file    
      */
-    private function writeHead($columnInfo, $countElements, $outputFile)
+    private function writeHead($columnInfo, $fp)
     {
-
-        $headString = "";
-
-        for ($i = 0; $i < $countElements; $i++) {
-            if ($i == $countElements - 1) {
-                $headString.=$columnInfo[$i]['name'];
-            } else {
-                $headString.=$columnInfo[$i]['name'] . ";";
-            }
+        $names = [];
+        foreach ($columnInfo as $column){
+            $names[] = $column['name'];
         }
-
-        file_put_contents($outputFile, "");
-        file_put_contents($outputFile, $headString . "\n", FILE_APPEND);
+        fputcsv($fp, $names);
     }
 
     /**
      * Get string for append in final file
      * @param int $dbf input database resource id from dbase_open
-     * @param int $i element index
-     * @param int $countElements count elements in string
-     * @param string $charsetInput input database charset
-     * @param string $charsetOutput output file charset
-     * @return string string to append in csv
+     * @param int $i element index     
+     * @return array array to append in csv
      */
-    private function getRowToString($dbf, $i, $countElements, $charsetInput = false, $charsetOutput = "UTF-8")
-    {
-
-        $out = "";
+    private function getRowToString($dbf, $i)
+    {       
         $row = dbase_get_record($dbf, $i);
+        unset($row['deleted']);
         //print_r($row);
         //sleep(5);
-        $current = 0;
-        foreach ($row as $key => $value) {
-            if ($key === "deleted") {
-                continue;
-            }
-            if ($current == $countElements - 1) {
-                $out.= $this->getValueForCSV(trim($value));
-            } else {
-                $out.= $this->getValueForCSV(trim($value)) . ";";
-            }
-            $current++;
-        }
 
-        if ($charsetInput) {
-            $out = iconv($charsetInput, $charsetOutput, $out);
+        if ($this->charsetInput) {
+            $row = array_map(array($this,"conv"), $row);
         }
-        return $out;
+        return $row;
     }
-
-    /**
-     * @param string|int $value value element in database string 
-     * @return string|int formatted string for csv
-     */
-    private function getValueForCSV($value)
-    {
-        if (is_numeric($value)) {
-            return $value;
-        } else {
-            return '"' . str_replace('"', '""', $value) . '"';
-        }
-    }
+    
 
     /**
      * @param string $outputFile path to final file
@@ -158,5 +127,9 @@ class ToCSV extends Command
         }
         return false;
     }
-    
+
+    private function conv($item)
+    {
+        return iconv($this->charsetInput, $this->charsetOutput, trim($item));
+    }
 }
