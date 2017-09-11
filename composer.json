@@ -2,7 +2,7 @@
     "name": "metadone/dbf2csv",
     "description": "Convert DBF to CSV.",
     "keywords": ["dbf2csv","dbf","convert"],
-    "homepage": "http://metadone.ru",
+    "homepage": "https://metadone.ru",
     "license": "Apache",
     "authors": [
         {
@@ -12,9 +12,10 @@
     ],
     "autoload": {
         "psr-4": {
-            "Convert\\": "src/Convert/"
+            "Metadone\\Convert\\": "src/Convert/"
         }
     },
+    "bin": ["bin/dbf2csv"],
     "require": {
         "php": ">=5.5.0",
         "symfony/console": "v3.0.4"

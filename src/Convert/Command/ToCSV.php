@@ -1,6 +1,6 @@
 <?php
 
-namespace Convert\Command;
+namespace Metadone\Convert\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

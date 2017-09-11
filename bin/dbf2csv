@@ -3,11 +3,11 @@
 error_reporting(E_ERROR);
 require __DIR__ . '/../vendor/autoload.php';
 
-use Convert\Command\ToCSV;
+use Metadone\Convert\Command\ToCSV;
 use Symfony\Component\Console\Application;
 
 $command = new ToCSV();
-$application = new Application('dbf2csv', '0.0.3');
+$application = new Application('dbf2csv', '0.0.4');
 $application->add($command);
 $application->setDefaultCommand($command->getName());
 $application->run();

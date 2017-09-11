@@ -36,7 +36,7 @@ _Convert DBF files to CSV_
 ###Install phar
 
 ```sh
-curl -O http://metadone.ru/dbf2csv.phar
+curl -O https://metadone.ru/dbf2csv.phar
 chmod +x dbf2csv.phar
 sudo mv dbf2csv.phar /usr/local/bin/dbf2csv
 ```
